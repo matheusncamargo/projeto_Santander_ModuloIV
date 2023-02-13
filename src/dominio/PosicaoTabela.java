@@ -13,7 +13,7 @@ public record PosicaoTabela(Time time,
     @Override
     public String toString() {
         return  time +
-                ", pontos=" + null + // desenvolver forma de obter a pontuação
+                ", pontos=" + ((vitorias*3)+empates)+
                 ", vitorias=" + vitorias +
                 ", derrotas=" + derrotas +
                 ", empates=" + empates +

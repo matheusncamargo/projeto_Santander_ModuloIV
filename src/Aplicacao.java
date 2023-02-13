@@ -1,63 +1,63 @@
 import dominio.PosicaoTabela;
 import dominio.Resultado;
-import impl.Brasileirao;
 import impl.CampeonatoBrasileiroImpl;
 import java.io.IOException;
-import java.util.*;
+import java.util.IntSummaryStatistics;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
 
 public class Aplicacao {
 
     public static void main(String[] args) throws IOException {
 
-        boolean continuar;
-        do {
-            int ano = getAno();
 
-            Brasileirao resultados = new CampeonatoBrasileiroImpl(ano);
-            System.out.printf("%15s .::BRASILEIRÃO %d::. %15s %n","", ano, "");
-            System.out.printf( "%38s %n%n","──────────────────────");
+        // obter a implementação: (ponto extra - abstrair para interface)
+        System.out.println("Digite o ano do Brasileirao a ser pesquisado: ");
+        int ano = new Scanner(System.in).nextInt();
+        CampeonatoBrasileiroImpl resultados = new CampeonatoBrasileiroImpl(ano);
 
-            imprimirEstatisticas(resultados);
+        // imprimir estatisticas
+        imprimirEstatisticas(resultados);
 
-            imprimirTabela(resultados.getTabela());
+        // imprimir tabela ordenada
+        imprimirTabela(resultados.getTabela());
 
-            continuar = getResposta();
-        }while(continuar);
     }
 
-    private static void imprimirEstatisticas(Brasileirao brasileirao) {
+    private static void imprimirEstatisticas(CampeonatoBrasileiroImpl brasileirao) {
         IntSummaryStatistics statistics = brasileirao.getEstatisticasPorJogo();
 
-        System.out.println("Estatisticas (Total de gols) - " + statistics.getSum());
-        System.out.println("Estatisticas (Total de jogos) - " + statistics.getCount());
-        System.out.println("Estatisticas (Media de gols) - " + statistics.getAverage());
+        System.out.println("Estatisticas (Total de gols) - " + statistics.getSum()); // -OK
+        System.out.println("Estatisticas (Total de jogos) - " + statistics.getCount()); // - OK
+        System.out.println("Estatisticas (Media de gols) - " + statistics.getAverage()); // - OK
 
         Map.Entry<Resultado, Long> placarMaisRepetido = brasileirao.getPlacarMaisRepetido();
 
         System.out.println("Estatisticas (Placar mais repetido) - "
-                + placarMaisRepetido.getKey() + " (" +placarMaisRepetido.getValue() + " jogo(s))");
+                + placarMaisRepetido.getKey() + " (" +placarMaisRepetido.getValue() + " jogo(s))"); // - OK
 
         Map.Entry<Resultado, Long> placarMenosRepetido = brasileirao.getPlacarMenosRepetido();
 
         System.out.println("Estatisticas (Placar menos repetido) - "
-                + placarMenosRepetido.getKey() + " (" +placarMenosRepetido.getValue() + " jogo(s))");
+                + placarMenosRepetido.getKey() + " (" +placarMenosRepetido.getValue() + " jogo(s))"); // - OK
 
-        Long jogosCom3OuMaisGols = brasileirao.getTotalJogosCom3OuMaisGols();
-        Long jogosComMenosDe3Gols = brasileirao.getTotalJogosComMenosDe3Gols();
+        Long jogosCom3OuMaisGols = brasileirao.getTotalJogosCom3OuMaisGols(); // OK
+        Long jogosComMenosDe3Gols = brasileirao.getTotalJogosComMenosDe3Gols(); // OK
 
-        System.out.println("Estatisticas (3 ou mais gols) - " + jogosCom3OuMaisGols);
-        System.out.println("Estatisticas (-3 gols) - " + jogosComMenosDe3Gols);
+        System.out.println("Estatisticas (3 ou mais gols) - " + jogosCom3OuMaisGols); // - OK
+        System.out.println("Estatisticas (-3 gols) - " + jogosComMenosDe3Gols); // - OK
 
-        Long totalVitoriasEmCasa = brasileirao.getTotalVitoriasEmCasa();
-        Long vitoriasForaDeCasa = brasileirao.getTotalVitoriasForaDeCasa();
-        Long empates = brasileirao.getTotalEmpates();
+        Long totalVitoriasEmCasa = brasileirao.getTotalVitoriasEmCasa(); // - OK
+        Long vitoriasForaDeCasa = brasileirao.getTotalVitoriasForaDeCasa(); // - OK
+        Long empates = brasileirao.getTotalEmpates(); // - OK
 
-        System.out.println("Estatisticas (Vitorias Fora de casa) - " + vitoriasForaDeCasa);
-        System.out.println("Estatisticas (Vitorias Em casa) - " + totalVitoriasEmCasa);
-        System.out.println("Estatisticas (Empates) - " + empates);
+        System.out.println("Estatisticas (Vitorias Fora de casa) - " + vitoriasForaDeCasa);  // - OK
+        System.out.println("Estatisticas (Vitorias Em casa) - " + totalVitoriasEmCasa); // - OK
+        System.out.println("Estatisticas (Empates) - " + empates); // - OK
     }
 
-    public static void imprimirTabela(Set<PosicaoTabela> posicoes) {
+    public static void imprimirTabela(Set<PosicaoTabela> posicoes) { // - OK
         System.out.println();
         System.out.println("## TABELA CAMPEONADO BRASILEIRO: ##");
         int colocacao = 1;
@@ -65,41 +65,7 @@ public class Aplicacao {
             System.out.println(colocacao +". " + posicao);
             colocacao++;
         }
-
         System.out.println();
         System.out.println();
-    }
-
-    private static boolean getResposta() {
-        boolean continuar;
-        int resposta;
-        do {
-            System.out.println("Deseja continuar pesquisando?\n1-Sim\n2-Não");
-            try{
-                resposta = new Scanner(System.in).nextInt();
-            }catch (InputMismatchException | NumberFormatException e) {
-                System.err.println("Erro: " + e);
-                resposta = 0;
-            }
-            if (resposta < 1 || resposta > 2) {
-                System.out.println("Resposta digitada inválido. Por favor, digite novamente.");
-            }
-            continuar = resposta == 1;
-        }while(resposta < 1 || resposta > 2);
-        return continuar;
-    }
-
-    private static int getAno() {
-        int ano = 0;
-        do{
-            System.out.println("Digite o ano do brasileirao a ser pesquiado: ");
-            try {
-                ano = new Scanner(System.in).nextInt();
-            }catch (InputMismatchException | NumberFormatException e){
-                System.err.println("Erro: " + e);
-            }
-            if (ano < 2003 || ano > 2020) System.out.println("Valor digitado inválido. Digite um valor valido.");
-        } while (ano < 2003 || ano > 2020);
-        return ano;
     }
 }
